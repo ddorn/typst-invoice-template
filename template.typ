@@ -26,14 +26,16 @@
 }
 
 #let format-company-info(info, title: none) = [
-  #check-dict-keys(info, "company-name", "address", "name", "email", "phone")
+  #check-dict-keys(info, "company-name", "address", "name", "email", "phone", "siret")
   #title\
   #info.company-name\
-  #info.address
+  #info.address\
+  #if info.name != none [
 
-  Attn: #info.name\
+  Attn: #info.name\ ]
   #link("mailto:" + info.email)\
-  #info.phone
+  #if info.phone != none [ #info.phone\ ]
+  #if info.siret != none [ Siret: #info.siret ]
 ]
 
 #let format-doc-info(info) = [
@@ -61,19 +63,23 @@
 
 
   #grid(columns: 2, column-gutter: 1fr)[
-    #format-company-info(client-info, title: [*TO:*])
+    #format-company-info(preparer-info, title: [*Diego DORN*])
   ][
-    #format-company-info(preparer-info, title: [*FROM:*])
+    #format-company-info(client-info, title: if doc-info.lang == "fr" [*À l'intention de:*] else [*To:*])
   ]
 
   #v(1em)
 ]
 
-#let format-payment-info(payment-info) = {
+#let format-payment-info(payment-info, doc-info) = {
   check-dict-keys(payment-info, "payment-window", "account-details")
   [
     #v(1em)
-    *Due within #payment-info.payment-window days of receipt.*
+    #if doc-info.lang == "fr" [
+      *À payer dans les #payment-info.payment-window jours suivant la réception.*
+    ] else [
+      *Due within #payment-info.payment-window days of receipt.*
+    ]
 
     #payment-info.account-details
   ]
@@ -110,7 +116,7 @@
   } else {
     fraction-int = decimal + str(fraction-int)
   }
-  let formatted = currency + num-with-commas + fraction-int
+  let formatted = num-with-commas + fraction-int + currency
   if number < 0 {
     formatted = "(" + formatted + ")"
   }
@@ -235,7 +241,7 @@
       let (display-value, new-row-total, _) = _format-charge-value(
         value, info, row-total, row-number
       )
-      
+
       out.push(display-value)
       row-total = new-row-total
     }
@@ -248,7 +254,7 @@
     total-amount += row-total
   }
   if has-multiplier {
-    found-infos.insert("total", (type: "currency"))
+    found-infos.insert("total HT", (type: "currency"))
   }
   let col-spec = _format-charge-columns(found-infos)
   let names = col-spec.remove("names")
@@ -291,7 +297,7 @@
 
   body
   if payment-info != none {
-    format-payment-info(payment-info)
+    format-payment-info(payment-info, doc-info)
   }
 }
 
