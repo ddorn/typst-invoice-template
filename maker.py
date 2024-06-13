@@ -13,7 +13,7 @@ MAKER_DIR = Path(__file__).parent
 TEMPLATE = MAKER_DIR / "template.yaml"
 METADATA = MAKER_DIR / "metadata.yaml"
 
-app = typer.Typer()
+app = typer.Typer(no_args_is_help=True, add_completion=False)
 
 
 def select_file(file: Path):
@@ -22,7 +22,7 @@ def select_file(file: Path):
     print(f"Selected file: {file}")
 
 
-@app.command()
+@app.command(no_args_is_help=True)
 def new(name: str, folder: Path = INVOICES_DIR):
     """Create a new invoice."""
     folder.mkdir(exist_ok=True)
