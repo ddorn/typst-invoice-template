@@ -1,5 +1,7 @@
 # Convert all yaml files to pdf using typst
 
+INVOICE_DIR = ~/Documents/invoices
+
 %.pdf: %.yaml
 	# First symlink the yaml to metadata.yaml
 	ln -sf $< metadata.yaml
@@ -7,5 +9,5 @@
 	typst compile main.typ $@
 
 
-last: $(shell ls ../invoices/*.yaml | tail -n 1 | sed 's/yaml/pdf/')
+last: $(shell ls $(INVOICE_DIR)/*.yaml | tail -n 1 | sed 's/yaml/pdf/')
 	@echo "Last invoice is $<"
