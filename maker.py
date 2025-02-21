@@ -8,7 +8,7 @@ from pathlib import Path
 
 import typer
 
-INVOICES_DIR = Path(__file__).parent.parent / "invoices"
+INVOICES_DIR = Path.home() / "Documents" / "invoices"
 MAKER_DIR = Path(__file__).parent
 TEMPLATE = MAKER_DIR / "template.yaml"
 METADATA = MAKER_DIR / "metadata.yaml"
@@ -26,9 +26,9 @@ def select_file(file: Path):
 def new(name: str, folder: Path = INVOICES_DIR):
     """Create a new invoice."""
     folder.mkdir(exist_ok=True)
-    month = time.strftime("%Y%m")
-    invoices_this_month = len(list(folder.glob(f"{month}*.yaml")))
-    id_ = f"{month}{invoices_this_month + 1:02d}"
+    month = time.strftime("%Y-%m")
+    nb_of_invoices = len(list(folder.glob("*.yaml")))
+    id_ = f"{month}-{nb_of_invoices + 1:03d}"
     invoice = folder / f"{id_}-{name}.yaml"
 
     template = TEMPLATE.read_text()
